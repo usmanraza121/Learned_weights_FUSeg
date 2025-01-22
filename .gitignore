@@ -2,5 +2,4 @@
 *.log
 *.mat
 .idea
-ckpt
 data
