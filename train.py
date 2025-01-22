@@ -40,7 +40,7 @@ image_loader_train = ImageLoader(img_dir, mask_dir=mask_dir,
                                     image_tform=data_transforms['train'], 
                                     mask_tform=data_transforms['train'], 
                                     imgloader=PIL.Image.open,
-                                    image_type='PIL')  # Options: 'rgb', 'weights', 'PIL'
+                                    image_type='weights')  # Options: 'rgb', 'weights', 'PIL'
                                     
 dataset_train_size = len(image_loader_train)
 print('----Image_type ', image_loader_train.image_type, '------')
