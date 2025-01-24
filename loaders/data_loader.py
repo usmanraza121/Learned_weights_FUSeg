@@ -34,12 +34,27 @@ def data_preprocessing_unet():
         ]),
     }
     return data_transforms
+def from_pil(pimg):
+    pimg = pimg.convert(mode='RGB')
+    nimg = np.asarray(pimg)
+    nimg2 = np.dstack((nimg[:,:,0],nimg[:,:,1],nimg[:,:,2])) # hacky!
+    nimg2.setflags(write=True)
+    return nimg2
 
+def to_pil(nimg):
+    return Image.fromarray(np.uint8(nimg))
+
+def grey_world(nimg):
+    nimg = nimg.transpose(2, 0, 1).astype(np.uint32)
+    mu_g = np.average(nimg[1])
+    nimg[0] = np.minimum(nimg[0]*(mu_g/np.average(nimg[0])),255)
+    nimg[2] = np.minimum(nimg[2]*(mu_g/np.average(nimg[2])),255)
+    return  nimg.transpose(1, 2, 0).astype(np.uint8)
 
 class ImageLoader(torch.utils.data.Dataset):
     def __init__(self, img_dir, mask_dir=None, image_tform=None, 
                                                 mask_tform=None, imgloader=PIL.Image.open, format='.png',
-                                                image_type='rgb'):  # Options: 'rgb', 'weights', 'PIL'
+                                                image_type='rgb'):  # Options: 'rgb', 'weights', 'PIL', 'grey_world'
         super(ImageLoader, self).__init__()
         self.image_type = image_type
         self.img_dir = img_dir
@@ -64,6 +79,10 @@ class ImageLoader(torch.utils.data.Dataset):
         if self.image_type == 'PIL':
             image = image.convert('L')
             # print('____PIL_____')
+        #    ------------------------------------------Grey_world--------------
+        if self.image_type == 'grey_world':
+            image = to_pil(grey_world(from_pil(image)))
+            # image = grey_world(from_pil(image))
         
         if self.mask_dir is not None:
             mask = self.imgloader(self.mask_filenames[i]).convert('L')
@@ -91,11 +110,9 @@ class ImageLoader(torch.utils.data.Dataset):
             gray_tensor = torch.tensordot(image, weights, dims=([0], [0]))
             # print('print_gray==',gray_tensor.shape) 
             image = gray_tensor.unsqueeze(0).repeat(3, 1, 1)
-            # print('____weights_____')
         
         if self.image_type == 'PIL':
             image = image.repeat(3, 1, 1)  # for PIL_L convert
-        # print('----Image_type ', self.image_type, '------')
 
         return image, binary_mask
 
@@ -113,7 +130,7 @@ if __name__ == "__main__":
         mask_dir=mask_dir,
         image_tform=image_transforms,
         mask_tform=mask_transforms,
-        image_type='weights')  # Options: 'rgb', 'weights', 'PIL')
+        image_type='rgb')  # Options: 'rgb', 'weights', 'PIL')
     
     dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
     

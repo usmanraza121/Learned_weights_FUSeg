@@ -15,15 +15,25 @@ import PIL
 from PIL import Image
 from tempfile import TemporaryDirectory
 
+
+# os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+
+
 cudnn.benchmark = True
 
 from loaders.data_loader import *
 from trainers.trainer import *
 # from trainers.trainer import train_model
+loss2 = torch.nn.BCEWithLogitsLoss()
 
 def UnetLoss(preds, targets):
+    # targets = targets.unsqueeze(1)
     ce_loss = loss(preds, targets)
+    # ce_loss = loss2(preds, targets.float())
     acc = (torch.max(preds, 1)[1] == targets).float().mean()
+    # print('ce_loss:', ce_loss)
+    # print('target::', targets.shape)
+    # print('pred:::', preds.shape)
     return ce_loss, acc
 
 batch_size = 16
@@ -40,7 +50,7 @@ image_loader_train = ImageLoader(img_dir, mask_dir=mask_dir,
                                     image_tform=data_transforms['train'], 
                                     mask_tform=data_transforms['train'], 
                                     imgloader=PIL.Image.open,
-                                    image_type='weights')  # Options: 'rgb', 'weights', 'PIL'
+                                    image_type='grey_world')  # Options: 'rgb', 'weights', 'PIL', 'grey_world'
                                     
 dataset_train_size = len(image_loader_train)
 print('----Image_type ', image_loader_train.image_type, '------')
@@ -71,10 +81,11 @@ from models.tiny_unet import *
 from models.unet_model_zoo import UNet, DeepLabV3, SSModelZoo
 from models.LiteSeg import LiteSeg
 # ------------------------model--------------------------
-# model = TinyUNet(in_channels=3, num_classes=2, name='tinyunet')
-# model = UNet(out_channels=2 ,name='UNet')
-model = LiteSeg(backbone_type='mobilenet_v2', name='LiteSeg')  # backbone_type='mobilenet_v2' or 'resnet' 
-# model = DeepLabV3(num_classes=2, name='DeepLabV3')
+# model = TinyUNet(in_channels=3, num_classes=2, name='tinyunet2')
+# model = UNet(out_channels=2 ,name='UNet2')
+model = LiteSeg(backbone_type='mobilenet_v2', name='LiteSeg_313')  # backbone_type='mobilenet_v2' or 'resnet' 
+# model = DeepLabV3(num_classes=2, name='DeepLabV32')
+
 # model = SSModelZoo(model_name='resnet50d', pretrained=False) 
 
 

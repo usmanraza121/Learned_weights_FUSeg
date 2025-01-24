@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchsummary import summary
+
 
 # from .modules import conv1x1, ConvBNAct
 # from .backbone import ResNet, Mobilenetv2
@@ -61,7 +63,7 @@ def conv1x1(in_channels, out_channels, stride=1, bias=False):
 class ResNet(nn.Module):
     # Load ResNet pretrained on ImageNet from torchvision, see
     # https://pytorch.org/vision/stable/models/resnet.html
-    def __init__(self, resnet_type, pretrained=True):
+    def __init__(self, resnet_type, pretrained=False):
         super(ResNet, self).__init__()
         from torchvision.models import resnet18, resnet34, resnet50, resnet101, resnet152
 
@@ -94,7 +96,7 @@ class ResNet(nn.Module):
 
 
 class Mobilenetv2(nn.Module):
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=False):
         super(Mobilenetv2, self).__init__()
         from torchvision.models import mobilenet_v2
 
@@ -128,9 +130,15 @@ class LiteSeg(nn.Module):
 
         self.daspp = DASPPModule(channels[0], 512, act_type)
         self.seg_head = SegHead(512 + channels[1], num_class, act_type)
+        self.con2d1 = nn.Conv2d(3, 1, kernel_size=1)
 
     def forward(self, x):
         size = x.size()[2:]
+        x = self.con2d1(x)
+        # print('x_:', x.shape)
+
+        x = x.repeat(1, 3, 1, 1)
+        # print('x__r:', x.shape)
 
         _, x1, _, x = self.backbone(x)
         size1 = x1.size()[2:]
@@ -185,7 +193,17 @@ class SegHead(nn.Sequential):
 if __name__ == "__main__":
     model = LiteSeg()
 
-    print(model)
+    # print(model)
     input_tensor = torch.randn(1, 3, 256, 256)  # Batch size 1, RGB image 256x256
     output = model(input_tensor)
     print(f"Output shape: {output.shape}")  # Shape depends on timm architecture
+    # s= summary(model, (1, 3, 256, 256))
+    # print(s)
+    # flops, params = profile(model, (dummy_input, ), verbose=False)
+    # # -------------------------------------------------------------------------------#
+    # #   flops * 2 because profile does not consider convolution as two operations.
+    # # -------------------------------------------------------------------------------#
+    # flops         = flops * 2
+    # flops, params = clever_format([flops, params], "%.4f")
+    # print(f'Total GFLOPs: {flops}')
+    # print(f'Total Params: {params}')

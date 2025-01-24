@@ -108,7 +108,7 @@ class TinyUNet(nn.Module):
     in_channels: The number of input channels
     num_classes: The number of segmentation classes
     '''
-    def __init__(self, in_channels=3, num_classes=2, name='tinyunet'):
+    def __init__(self, in_channels=3, num_classes=1, name='tinyunet'):
         super(TinyUNet, self).__init__()
         self.name = name
         in_filters      = [192, 384, 768, 1024]
@@ -124,6 +124,7 @@ class TinyUNet(nn.Module):
         self.decoder2   = UNetDecoder(in_filters[1], out_filters[1])
         self.decoder1   = UNetDecoder(in_filters[0], out_filters[0])
         self.final_conv = nn.Conv2d(out_filters[0], num_classes, kernel_size=1)
+        # self.final_conv2 = nn.Conv2d(num_classes, 1, kernel_size=1)
         
     def forward(self, x):
         x, skip1 = self.encoder1(x)
@@ -136,23 +137,27 @@ class TinyUNet(nn.Module):
         x        = self.decoder2(x, skip2)
         x        = self.decoder1(x, skip1)
         x        = self.final_conv(x)
+        # x        = self.final_conv2(x)
         return x
 
 
 if __name__ == '__main__':
-    model         = TinyUNet(in_channels=3, num_classes=2)
+    model         = TinyUNet(in_channels=3, num_classes=1)
 
     device        = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model         = model.to(device)
 
-    # summary(model, (3, 256, 256))
+    summary(model, (3, 256, 256))
         
     dummy_input   = torch.randn(1, 3, 256, 256).to(device)
-    flops, params = profile(model, (dummy_input, ), verbose=False)
+    # flops, params = profile(model, (dummy_input, ), verbose=False)
     #-------------------------------------------------------------------------------#
     #   flops * 2 because profile does not consider convolution as two operations.
     #-------------------------------------------------------------------------------#
-    flops         = flops * 2
-    flops, params = clever_format([flops, params], "%.4f")
-    print(f'Total GFLOPs: {flops}')
-    print(f'Total Params: {params}')
+    # flops         = flops * 2
+    # flops, params = clever_format([flops, params], "%.4f")
+    # print(f'Total GFLOPs: {flops}')
+    # print(f'Total Params: {params}')
+
+    output = model(dummy_input)
+    print(f"Output shape: {output.shape}")  

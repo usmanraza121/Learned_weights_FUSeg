@@ -158,7 +158,7 @@ class SSModelZoo(nn.Module):
 
 if __name__ == "__main__":
     # model = DeepLabV3Plus(num_classes=2)  
-    model = SSModelZoo(model_name='resnet50d', num_classes=2, pretrained=False)
+    model = SSModelZoo(model_name='fcn_resnet50', num_classes=2, pretrained=False)
     print(model)
     input_tensor = torch.randn(1, 3, 256, 256)  
     output = model(input_tensor)
