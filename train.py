@@ -83,7 +83,7 @@ from models.LiteSeg import LiteSeg
 # ------------------------model--------------------------
 # model = TinyUNet(in_channels=3, num_classes=2, name='tinyunet2')
 # model = UNet(out_channels=2 ,name='UNet2')
-model = LiteSeg(backbone_type='mobilenet_v2', name='LiteSeg_313')  # backbone_type='mobilenet_v2' or 'resnet' 
+model = LiteSeg(backbone_type='mobilenet_v2', name='LiteSeg_NP')  # backbone_type='mobilenet_v2' or 'resnet' 
 # model = DeepLabV3(num_classes=2, name='DeepLabV32')
 
 # model = SSModelZoo(model_name='resnet50d', pretrained=False) 

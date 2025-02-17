@@ -134,10 +134,9 @@ class LiteSeg(nn.Module):
 
     def forward(self, x):
         size = x.size()[2:]
-        x = self.con2d1(x)
-        # print('x_:', x.shape)
-
-        x = x.repeat(1, 3, 1, 1)
+        
+        # x = self.con2d1(x)
+        # x = x.repeat(1, 3, 1, 1)
         # print('x__r:', x.shape)
 
         _, x1, _, x = self.backbone(x)
@@ -197,8 +196,10 @@ if __name__ == "__main__":
     input_tensor = torch.randn(1, 3, 256, 256)  # Batch size 1, RGB image 256x256
     output = model(input_tensor)
     print(f"Output shape: {output.shape}")  # Shape depends on timm architecture
-    # s= summary(model, (1, 3, 256, 256))
-    # print(s)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    summary(model, (3, 256, 256))
+    print(summary)
     # flops, params = profile(model, (dummy_input, ), verbose=False)
     # # -------------------------------------------------------------------------------#
     # #   flops * 2 because profile does not consider convolution as two operations.
