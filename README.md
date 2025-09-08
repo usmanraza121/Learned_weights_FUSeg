@@ -1,5 +1,5 @@
-# The Influence of Color in Semantic Ulcer Segmentation Using Deep Learning Models
-This study investigates the influence of color on ulcer semantic segmentation. Different color-to-grayscale conversion techniques are explored to study the learning behavior of the CNN model. The goal is to explore different RGB-to-Grayscale conversion techniques and understand their impact on the performance of the CNN model for foot ulcer segmentation.
+# [The Influence of Color in Semantic Ulcer Segmentation Using Deep Learning Models](https://link.springer.com/chapter/10.1007/978-3-031-96538-8_13)
+This study investigates the influence of color on the semantic segmentation of ulcer wounds using deep learning models. Various RGB-to-grayscale conversion techniques are explored to analyze their impact on the performance of convolutional neural network (CNN) models for foot ulcer segmentation. The study compares traditional color-to-grayscale conversion methods with a novel approach using learned weights to enhance segmentation performance.
 
 ## RGB to Grayscale conversion outputs using different ITU-R standards
 <div align="center">
@@ -88,3 +88,5 @@ From left: the result of color image preprocessing (conversion to grayscale usin
     </a>
 </div>
 
+## Citation
+Usman, Muhammad, and Jacek Rumiński. "The Influence of Color on Semantic Ulcer Segmentation Using Deep Learning Models." In *Nordic-Baltic Conference on Biomedical Engineering and Medical Physics, Polish Conference on Biocybernetics and Biomedical Engineering*, pp. 147-164. Springer, Cham, 2025. [https://link.springer.com/chapter/10.1007/978-3-031-96538-8_13](https://link.springer.com/chapter/10.1007/978-3-031-96538-8_13)
